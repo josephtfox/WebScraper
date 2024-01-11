@@ -12,6 +12,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
 
+import finnhub
+
 
 class DataProcessor:
     @staticmethod
@@ -90,6 +92,46 @@ class DashboardApp(QMainWindow):
         else:
             light(self.app)
             plt.style.use('default')
+
+    def on_search(self):
+        search_text = self.search_bar.text()
+        # Simulate data analytics result
+        analytics_result = f"Analytics result for '{search_text}':\nSome meaningful data here."
+        self.text_analytics_result.setPlainText(analytics_result)
+
+    def toggle_dark_mode(self, state):
+        if state == 2:  # 2 corresponds to checked
+            dark(self.app)
+        else:
+            light(self.app)
+
+    def get_stock_prices(self):
+        # Placeholder function to simulate fetching stock prices
+        # Replace this with your actual web scraping logic
+        headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        url = 'https://finance.yahoo.com/quote/NXT'
+
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        price = soup.find('fin-streamer', {'class':'Fw(b) Fz(36px) Mb(-4px) D(ib)'}).text
+        change = soup.find('fin-streamer', {'class':'Fw(500) Pstart(8px) Fz(24px)'}).text
+
+        return {
+            "AAPL": 150.25,
+            "GOOGL": 2700.50,
+            "MSFT": 300.75,
+            # Add more stock symbols and prices as needed
+        }
+
+    def update_price_display(self, stock_prices):
+        # Clear the text widget
+        # self.price_display.delete(1.0, tk.END)
+
+        # Update the text widget with the stock prices
+        for symbol, price in stock_prices.items():
+            pass
+            # self.price_display.insert(tk.END, f"{symbol}: ${price:.2f}\n")
 
 
 class MatplotlibCanvas(FigureCanvas):
